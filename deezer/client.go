@@ -1,6 +1,7 @@
 package deezer
 
 import (
+	"encoding/json"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -54,6 +55,21 @@ func (c *Client) getDeezerJSON(url string) (string, error) {
 		return "", err
 	}
 	return scrapeJSON(string(body))
+}
+
+// Song fetches a Song and its data from the ID.
+func (c *Client) Song(id string) (*Song, error) {
+	url := "https://www.deezer.com/track/" + id
+	j, err := c.getDeezerJSON(url)
+	if err != nil {
+		return nil, err
+	}
+	var song Song
+	err = json.Unmarshal([]byte(j), &song)
+	if err != nil {
+		return nil, err
+	}
+	return &song, nil
 }
 
 func scrapeJSON(body string) (string, error) {
