@@ -1,0 +1,12 @@
+image: alpine/edge
+packages:
+  - go
+sources:
+  - https://github.com/erebid/go-deezer
+tasks:
+  - test: |
+      cd go-deezer
+      go test -v ./...
+  - build: |
+      cd go-deezer
+      go build -v ./...
