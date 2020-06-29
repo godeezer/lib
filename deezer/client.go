@@ -72,6 +72,21 @@ func (c *Client) Song(id string) (*Song, error) {
 	return &song, nil
 }
 
+// Album fetches an Album and its data from the ID.
+func (c *Client) Album(id string) (*Album, error) {
+	url := "https://www.deezer.com/album/" + id
+	j, err := c.getDeezerJSON(url)
+	if err != nil {
+		return nil, err
+	}
+	var alb Album
+	err = json.Unmarshal([]byte(j), &alb)
+	if err != nil {
+		return nil, err
+	}
+	return &alb, nil
+}
+
 func scrapeJSON(body string) (string, error) {
 	re := regexp.MustCompile(`<script>window\.__DZR_APP_STATE__ = (.*)<\/script>`)
 	match := re.FindAllStringSubmatch(body, -1)
