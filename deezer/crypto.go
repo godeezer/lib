@@ -66,6 +66,8 @@ type EncryptedSongReader struct {
 	buffer *bytes.Buffer
 }
 
+// NewEncryptedSongReader creates an EncryptedSongReader
+// that reads from r and decrypts it using s.
 func NewEncryptedSongReader(r io.Reader, s SongData) (*EncryptedSongReader, error) {
 	reader := &EncryptedSongReader{r: r, s: s}
 	return reader, nil
