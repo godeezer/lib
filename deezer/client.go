@@ -2,6 +2,7 @@ package deezer
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -57,7 +58,7 @@ func (c *Client) getDeezerJSON(url string) (string, error) {
 	return scrapeJSON(string(body))
 }
 
-// Song fetches a Song and its data from the ID.
+// Song fetches a Song's data from the ID.
 func (c *Client) Song(id string) (*Song, error) {
 	url := "https://www.deezer.com/track/" + id
 	j, err := c.getDeezerJSON(url)
@@ -72,7 +73,7 @@ func (c *Client) Song(id string) (*Song, error) {
 	return &song, nil
 }
 
-// Album fetches an Album and its data from the ID.
+// Album fetches an Artist's data from the ID.
 func (c *Client) Album(id string) (*Album, error) {
 	url := "https://www.deezer.com/album/" + id
 	j, err := c.getDeezerJSON(url)
@@ -87,8 +88,26 @@ func (c *Client) Album(id string) (*Album, error) {
 	return &alb, nil
 }
 
+// Artist fetches an Artist's data from the ID.
+func (c *Client) Artist(id string) (*Artist, error) {
+	url := "https://www.deezer.com/artist/" + id
+	j, err := c.getDeezerJSON(url)
+	if err != nil {
+		return nil, err
+	}
+	var art Artist
+	err = json.Unmarshal([]byte(j), &art)
+	if err != nil {
+		return nil, err
+	}
+	return &art, nil
+}
+
 func scrapeJSON(body string) (string, error) {
 	re := regexp.MustCompile(`<script>window\.__DZR_APP_STATE__ = (.*)<\/script>`)
 	match := re.FindAllStringSubmatch(body, -1)
+	if len(match) < 1 {
+		return "", errors.New("no json found in body")
+	}
 	return match[0][1], nil
 }
