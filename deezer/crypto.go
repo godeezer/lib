@@ -18,20 +18,16 @@ import (
 const blowfishSecret = "g4el58wc0zvf9na1"
 const filenameKey = "jo6aey6haid2Teih"
 
-func songDownloadURL(s SongData, preferred Quality) (string, error) {
-	key, err := songFilename(s, preferred)
-	if err != nil {
-		return "", err
-	}
+// SongDownloadURL returns a download URL which can be used to stream the song.
+// The audio returned from the URL will be encrypted so you should use
+// a EncryptedSongReader to read it.
+func SongDownloadURL(s SongData, quality Quality) string {
+	key := songFilename(s, quality)
 	cdn := string(s.MD5Origin[0])
-	return "https://e-cdns-proxy-" + cdn + ".dzcdn.net/mobile/1/" + key, err
+	return "https://e-cdns-proxy-" + cdn + ".dzcdn.net/mobile/1/" + key
 }
 
-func songFilename(s SongData, preferred Quality) (string, error) {
-	quality, err := GetValidSongQuality(s, preferred)
-	if err != nil {
-		return "", err
-	}
+func songFilename(s SongData, quality Quality) string {
 	q := strconv.Itoa(int(quality))
 	step1 := strings.Join(
 		[]string{
@@ -49,7 +45,7 @@ func songFilename(s SongData, preferred Quality) (string, error) {
 	}
 	key := []byte(filenameKey)
 	ciphertext := encryptAes128ECB([]byte(step2), key)
-	return hex.EncodeToString(ciphertext), err
+	return hex.EncodeToString(ciphertext)
 }
 
 func encryptAes128ECB(pt, key []byte) []byte {
@@ -64,18 +60,19 @@ func encryptAes128ECB(pt, key []byte) []byte {
 }
 
 type EncryptedSongReader struct {
-	R      io.Reader
-	S      SongData
+	r      io.Reader
+	s      SongData
 	i      int
-	chunk  []byte
 	buffer *bytes.Buffer
 }
 
 func NewEncryptedSongReader(r io.Reader, s SongData) (*EncryptedSongReader, error) {
-	reader := &EncryptedSongReader{R: r, S: s}
+	reader := &EncryptedSongReader{r: r, s: s}
 	return reader, nil
 }
 
+// Read reads up to n(p) bytes into p, returning how many bytes
+// were read and any error.
 func (r *EncryptedSongReader) Read(p []byte) (int, error) {
 	buf := bytes.Buffer{}
 	for buf.Len() < len(p) {
@@ -89,9 +86,12 @@ func (r *EncryptedSongReader) Read(p []byte) (int, error) {
 	return buf.Read(p)
 }
 
+// ReadChunk returns the next n<=2048 bytes of the song.
+// It automatically decrypts chunks when it has to (every third chunk).
+// You most likely would prefer to use Read instead of ReadChunk because it implements io.Reader
 func (r *EncryptedSongReader) ReadChunk() ([]byte, error) {
 	chunk := make([]byte, 2048)
-	_, err := io.ReadFull(r.R, chunk)
+	_, err := io.ReadFull(r.r, chunk)
 	if err != nil {
 		if err == io.ErrUnexpectedEOF {
 			return chunk, io.EOF
@@ -100,15 +100,16 @@ func (r *EncryptedSongReader) ReadChunk() ([]byte, error) {
 		}
 	}
 	if r.i%3 == 0 {
-		fmt.Println("predecrypt", md5.Sum(chunk))
-		chunk, _ := decryptChunk(chunk, getBlowfishKey(r.S.ID))
-		//r.cryptmode.CryptBlocks(chunk, chunk)
-		println("postdecrypt", chunk[0])
+		chunk, err = decryptChunk(chunk, getBlowfishKey(r.s.ID))
+		if err != nil {
+			return chunk, err
+		}
 	}
 	r.i++
 	return chunk, nil
 }
 
+// getBlowfishKey returns the Blowfish key for a given song by its id.
 func getBlowfishKey(id string) []byte {
 	idmd5 := md5.Sum([]byte(id))
 	idmd5hex := hex.EncodeToString(idmd5[:])
@@ -120,6 +121,7 @@ func getBlowfishKey(id string) []byte {
 	return []byte(key)
 }
 
+// decryptChunk decrypts a 2048-byte chunk using the key.
 func decryptChunk(chunk, key []byte) ([]byte, error) {
 	ci, err := blowfish.NewCipher(key)
 	if err != nil {

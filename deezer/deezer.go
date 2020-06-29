@@ -39,7 +39,10 @@ type AlbumData struct {
 	Title string `json:"ALB_TITLE"`
 }
 
-func GetValidSongQuality(s SongData, preferred Quality) (Quality, error) {
+// GetValidSongQuality returns the preferred audio quality if it is availabe
+// for the song, the highest available quality otherwise, and an error
+// if there are no available qualities for the song.
+func ValidSongQuality(s SongData, preferred Quality) (Quality, error) {
 	var qualities []Quality
 	switch {
 	case s.FilesizeFLAC != 0:
