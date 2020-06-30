@@ -66,24 +66,25 @@ type Album struct {
 }
 
 type AlbumData struct {
-	ID                  string   `json:"ALB_ID"`
-	ArtistID            string   `json:"ART_ID"`
-	ArtistName          string   `json:"ART_NAME"`
-	Artists             []string `json:"ARTISTS"`
-	LabelName           string   `json:"LABEL_NAME"`
-	StyleName           string   `json:"STYLE_NAME"`
-	Title               string   `json:"ALB_TITLE"`
-	Version             string   `json:"VERSION"`
-	Picture             string   `json:"ALB_PICTURE"`
-	DigitalReleaseDate  string   `json:"DIGITAL_RELEASE_DATE"`
-	PhysicalReleaseDate string   `json:"PHYSICAL_RELEASE_DATE"`
-	ProviderID          string   `json:"PROVIDER_ID"`
-	SonyProdID          string   `json:"SONY_PROD_ID"`
-	UPC                 string   `json:"UPC"`
-	Status              string   `json:"STATUS"`
-	Fans                int      `json:"NB_FAN"`
-	Available           bool     `json:"AVAILABLE"`
-	Songs               *[]Song  `json:"SONGS"` // nil when fetching an album with client.Album, but present in artist.Albums[n].AlbumData from client.Artist
+	ID                  string `json:"ALB_ID"`
+	ArtistID            string `json:"ART_ID"`
+	ArtistName          string `json:"ART_NAME"`
+	LabelName           string `json:"LABEL_NAME"`
+	StyleName           string `json:"STYLE_NAME"`
+	Title               string `json:"ALB_TITLE"`
+	Version             string `json:"VERSION"`
+	Picture             string `json:"ALB_PICTURE"`
+	DigitalReleaseDate  string `json:"DIGITAL_RELEASE_DATE"`
+	PhysicalReleaseDate string `json:"PHYSICAL_RELEASE_DATE"`
+	ProviderID          string `json:"PROVIDER_ID"`
+	SonyProdID          string `json:"SONY_PROD_ID"`
+	UPC                 string `json:"UPC"`
+	Status              string `json:"STATUS"`
+	Fans                int    `json:"NB_FAN"`
+	Available           bool   `json:"AVAILABLE"`
+	Songs               *struct {
+		Data []SongData `json:"data"`
+	} `json:"SONGS"` // empty when fetching an album with client.Album, but present in artist.Albums[n].AlbumData from client.Artist
 }
 
 type Artist struct {
@@ -136,7 +137,7 @@ func ParseLink(link string) (ctype ContentType, id string) {
 		ctype = ContentAlbum
 	case "artist":
 		ctype = ContentArtist
-	case "song":
+	case "track":
 		ctype = ContentSong
 	}
 	return ctype, m[0][2]

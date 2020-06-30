@@ -73,7 +73,7 @@ func (c *Client) Song(id string) (*Song, error) {
 	return &song, nil
 }
 
-// Album fetches an Artist's data from the ID.
+// Album fetches an Album's data from the ID.
 func (c *Client) Album(id string) (*Album, error) {
 	url := "https://www.deezer.com/album/" + id
 	j, err := c.getDeezerJSON(url)
