@@ -60,10 +60,10 @@ func encryptAes128ECB(pt, key []byte) []byte {
 }
 
 type EncryptedSongReader struct {
-	r      io.Reader
-	s      SongData
-	i      int
-	buffer *bytes.Buffer
+	r   io.Reader
+	s   SongData
+	i   int
+	buf bytes.Buffer
 }
 
 // NewEncryptedSongReader creates an EncryptedSongReader
@@ -76,16 +76,15 @@ func NewEncryptedSongReader(r io.Reader, s SongData) (*EncryptedSongReader, erro
 // Read reads up to n(p) bytes into p, returning how many bytes
 // were read and any error.
 func (r *EncryptedSongReader) Read(p []byte) (int, error) {
-	buf := bytes.Buffer{}
-	for buf.Len() < len(p) {
+	for r.buf.Len() < len(p) {
 		chunk, err := r.ReadChunk()
-		buf.Write(chunk)
+		r.buf.Write(chunk)
 		if err != nil {
-			n, _ := buf.Read(p)
+			n, _ := r.buf.Read(p)
 			return n, err
 		}
 	}
-	return buf.Read(p)
+	return r.buf.Read(p)
 }
 
 // ReadChunk returns the next n<=2048 bytes of the song.

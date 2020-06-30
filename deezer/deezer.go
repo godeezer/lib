@@ -49,7 +49,7 @@ type SongData struct {
 	Filesize          string       `json:"FILESIZE"`
 	MediaVersion      string       `json:"MEDIA_VERSION"`
 	DiskNumber        string       `json:"DISK_NUMBER"`
-	TrackNumber       int       `json:"TRACK_NUMBER,string"`
+	TrackNumber       int          `json:"TRACK_NUMBER,string"`
 	Version           string       `json:"VERSION"`
 	ExplicitLyrics    string       `json:"EXPLICIT_LYRICS"`
 	ISRC              string       `json:"ISRC"`
