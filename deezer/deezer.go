@@ -23,49 +23,38 @@ const (
 )
 
 type Song struct {
-	Data SongData `json:"DATA"`
-}
-
-type SongData struct {
-	ID                string       `json:"SNG_ID"`
-	ProductTrackID    string       `json:"PRODUCT_TRACK_ID"`
-	UploadID          int          `json:"UPLOAD_ID"`
-	Title             string       `json:"SNG_TITLE"`
-	ArtistID          string       `json:"ART_ID"`
-	ProviderID        string       `json:"PROVIDER_ID"`
-	ArtistName        string       `json:"ART_NAME"`
-	Artists           []ArtistData `json:"ARTISTS"`
-	AlbumID           string       `json:"ALB_ID"`
-	AlbumTitle        string       `json:"ALB_TITLE"`
-	MD5Origin         string       `json:"MD5_ORIGIN"`
-	Video             bool         `json:"VIDEO"`
-	Duration          string       `json:"DURATION"`
-	AlbumPicture      string       `json:"ALB_PICTURE"`
-	ArtistPicture     string       `json:"ART_PICTURE"`
-	Rank              string       `json:"RANK_SNG"`
-	FilesizeMP3128    int          `json:"FILESIZE_MP3_128,string"`
-	FilesizeMP3320    int          `json:"FILESIZE_MP3_320,string"`
-	FilesizeFLAC      int          `json:"FILESIZE_FLAC,string"`
-	Filesize          string       `json:"FILESIZE"`
-	MediaVersion      string       `json:"MEDIA_VERSION"`
-	DiskNumber        string       `json:"DISK_NUMBER"`
-	TrackNumber       int          `json:"TRACK_NUMBER,string"`
-	Version           string       `json:"VERSION"`
-	ExplicitLyrics    string       `json:"EXPLICIT_LYRICS"`
-	ISRC              string       `json:"ISRC"`
-	HierarchicalTitle string       `json:"HIERARCHICAL_TITLE"`
-	LyricsID          int          `json:"LYRICS_ID"`
-	Status            int          `json:"STATUS"`
+	ID                string   `json:"SNG_ID"`
+	ProductTrackID    string   `json:"PRODUCT_TRACK_ID"`
+	UploadID          int      `json:"UPLOAD_ID"`
+	Title             string   `json:"SNG_TITLE"`
+	ArtistID          string   `json:"ART_ID"`
+	ProviderID        string   `json:"PROVIDER_ID"`
+	ArtistName        string   `json:"ART_NAME"`
+	Artists           []Artist `json:"ARTISTS"`
+	AlbumID           string   `json:"ALB_ID"`
+	AlbumTitle        string   `json:"ALB_TITLE"`
+	MD5Origin         string   `json:"MD5_ORIGIN"`
+	Video             bool     `json:"VIDEO"`
+	Duration          string   `json:"DURATION"`
+	AlbumPicture      string   `json:"ALB_PICTURE"`
+	ArtistPicture     string   `json:"ART_PICTURE"`
+	Rank              string   `json:"RANK_SNG"`
+	FilesizeMP3128    int      `json:"FILESIZE_MP3_128,string"`
+	FilesizeMP3320    int      `json:"FILESIZE_MP3_320,string"`
+	FilesizeFLAC      int      `json:"FILESIZE_FLAC,string"`
+	Filesize          string   `json:"FILESIZE"`
+	MediaVersion      string   `json:"MEDIA_VERSION"`
+	DiskNumber        string   `json:"DISK_NUMBER"`
+	TrackNumber       int      `json:"TRACK_NUMBER,string"`
+	Version           string   `json:"VERSION"`
+	ExplicitLyrics    string   `json:"EXPLICIT_LYRICS"`
+	ISRC              string   `json:"ISRC"`
+	HierarchicalTitle string   `json:"HIERARCHICAL_TITLE"`
+	LyricsID          int      `json:"LYRICS_ID"`
+	Status            int      `json:"STATUS"`
 }
 
 type Album struct {
-	Data  AlbumData `json:"DATA"`
-	Songs struct {
-		Data []SongData `json:"data"`
-	} `json:"SONGS"`
-}
-
-type AlbumData struct {
 	ID                  string `json:"ALB_ID"`
 	ArtistID            string `json:"ART_ID"`
 	ArtistName          string `json:"ART_NAME"`
@@ -82,19 +71,9 @@ type AlbumData struct {
 	Status              string `json:"STATUS"`
 	Fans                int    `json:"NB_FAN"`
 	Available           bool   `json:"AVAILABLE"`
-	Songs               *struct {
-		Data []SongData `json:"data"`
-	} `json:"SONGS"` // empty when fetching an album with client.Album, but present in artist.Albums[n].AlbumData from client.Artist
 }
 
 type Artist struct {
-	Data   ArtistData `json:"DATA"`
-	Albums struct {
-		Data []AlbumData `json:"data"`
-	} `json:"ALBUMS"`
-}
-
-type ArtistData struct {
 	ID      string `json:"ART_ID"`
 	Name    string `json:"ART_NAME"`
 	Picture string `json:"ART_PICTURE"`
@@ -104,7 +83,7 @@ type ArtistData struct {
 // ValidSongQuality returns the preferred audio quality if it is availabe
 // for the song, the highest available quality otherwise, and an error
 // if there are no available qualities for the song.
-func ValidSongQuality(s SongData, preferred Quality) (Quality, error) {
+func ValidSongQuality(s Song, preferred Quality) (Quality, error) {
 	var qualities []Quality
 	switch {
 	case s.FilesizeFLAC != 0:

@@ -21,13 +21,13 @@ const filenameKey = "jo6aey6haid2Teih"
 // SongDownloadURL returns a download URL which can be used to stream the song.
 // The audio returned from the URL will be encrypted so you should use
 // a EncryptedSongReader to read it.
-func SongDownloadURL(s SongData, quality Quality) string {
+func SongDownloadURL(s Song, quality Quality) string {
 	key := songFilename(s, quality)
 	cdn := string(s.MD5Origin[0])
 	return "https://e-cdns-proxy-" + cdn + ".dzcdn.net/mobile/1/" + key
 }
 
-func songFilename(s SongData, quality Quality) string {
+func songFilename(s Song, quality Quality) string {
 	q := strconv.Itoa(int(quality))
 	step1 := strings.Join(
 		[]string{
@@ -61,14 +61,14 @@ func encryptAes128ECB(pt, key []byte) []byte {
 
 type EncryptedSongReader struct {
 	r   io.Reader
-	s   SongData
+	s   Song
 	i   int
 	buf bytes.Buffer
 }
 
 // NewEncryptedSongReader creates an EncryptedSongReader
 // that reads from r and decrypts it using s.
-func NewEncryptedSongReader(r io.Reader, s SongData) (*EncryptedSongReader, error) {
+func NewEncryptedSongReader(r io.Reader, s Song) (*EncryptedSongReader, error) {
 	reader := &EncryptedSongReader{r: r, s: s}
 	return reader, nil
 }

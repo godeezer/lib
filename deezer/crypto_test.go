@@ -6,7 +6,7 @@ import (
 )
 
 // Peroxide by Ecco2k (Drain Gang)
-var song = SongData{
+var song = Song{
 	ID:             "793554582",
 	MD5Origin:      "19b61b6fe1faf7a77914a0a5180593af",
 	MediaVersion:   "3",
