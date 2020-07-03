@@ -111,9 +111,6 @@ func (r *EncryptedSongReader) ReadChunk() ([]byte, error) {
 		iv := []byte{0, 1, 2, 3, 4, 5, 6, 7}
 		r.bm.CryptBlocks(iv, iv)
 		r.bm.CryptBlocks(chunk, chunk)
-		if err != nil {
-			return chunk, err
-		}
 	}
 	r.i++
 	return chunk, nil
