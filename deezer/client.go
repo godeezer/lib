@@ -148,11 +148,7 @@ func (c *Client) apiDoJSON(method apiMethod, body interface{}, v interface{}) er
 	if err != nil {
 		return err
 	}
-	err = json.Unmarshal(jresp.Results, &v)
-	if err != nil {
-		return err
-	}
-	return nil
+	return json.Unmarshal(jresp.Results, &v)
 }
 
 func (c *Client) Get(url string) (resp *http.Response, err error) {
