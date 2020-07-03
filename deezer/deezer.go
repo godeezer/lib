@@ -1,7 +1,6 @@
 package deezer
 
 import (
-	"errors"
 	"fmt"
 	"regexp"
 )
@@ -78,30 +77,6 @@ type Artist struct {
 	Name    string `json:"ART_NAME"`
 	Picture string `json:"ART_PICTURE"`
 	Fans    int    `json:"NB_FAN"`
-}
-
-// ValidSongQuality returns the preferred audio quality if it is availabe
-// for the song, the highest available quality otherwise, and an error
-// if there are no available qualities for the song.
-func ValidSongQuality(s Song, preferred Quality) (Quality, error) {
-	var qualities []Quality
-	switch {
-	case s.FilesizeFLAC != 0:
-		qualities = append(qualities, FLAC)
-	case s.FilesizeMP3320 != 0:
-		qualities = append(qualities, MP3320)
-	case s.FilesizeMP3128 != 0:
-		qualities = append(qualities, MP3128)
-	}
-	for _, q := range qualities {
-		if q == preferred {
-			return q, nil
-		}
-	}
-	if len(qualities) > 0 {
-		return qualities[0], nil
-	}
-	return Quality(0), errors.New("no valid song quality")
 }
 
 // LinkContentType returns the content type and id of a given Deezer link.
