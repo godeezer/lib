@@ -23,6 +23,9 @@ const filenameKey = "jo6aey6haid2Teih"
 // a EncryptedSongReader to read it.
 func SongDownloadURL(s Song, quality Quality) string {
 	key := songFilename(s, quality)
+	if len(s.MD5Origin) < 32 {
+		return ""
+	}
 	cdn := string(s.MD5Origin[0])
 	return "https://e-cdns-proxy-" + cdn + ".dzcdn.net/mobile/1/" + key
 }
