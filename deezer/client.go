@@ -214,3 +214,36 @@ func (c *Client) AlbumsByArtist(id string) ([]Album, error) {
 	err := c.apiDoJSON(albumGetDiscography, body, &albums)
 	return albums.Data, err
 }
+
+// AvailableQualities returns the available qualities for download
+// of a song.
+func (c *Client) AvailableQualities(song Song) []Quality {
+	var qualities []Quality
+	if c.IsQualityAvailable(song, MP3128) {
+		qualities = append(qualities, MP3128)
+	}
+	if c.IsQualityAvailable(song, MP3320) {
+		qualities = append(qualities, MP3320)
+	}
+	if c.IsQualityAvailable(song, FLAC) {
+		qualities = append(qualities, FLAC)
+	}
+	return qualities
+}
+
+// IsQualityAvailable returns whether or not a song is available
+// to download for a song.
+func (c *Client) IsQualityAvailable(song Song, quality Quality) bool {
+	url := SongDownloadURL(song, quality)
+	if url == "" {
+		return false
+	}
+	resp, err := c.Get(url)
+	if err != nil {
+		return false
+	}
+	if resp.StatusCode != 200 {
+		return false
+	}
+	return true
+}
