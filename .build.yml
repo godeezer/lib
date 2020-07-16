@@ -1,6 +1,6 @@
 image: alpine/edge
 secrets:
-  - cabb4508-2a3e-483b-ad83-6b02a4237704
+  - 5f0c9e31-3674-4ca9-8ff8-0891b5d01f00
 packages:
   - go
 sources:
