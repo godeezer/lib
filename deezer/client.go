@@ -174,11 +174,14 @@ func (c *Client) csrfToken() (string, error) {
 }
 
 // Song fetches a Song.
-func (c *Client) Song(id string) (Song, error) {
+func (c *Client) Song(id string) (*Song, error) {
 	var song Song
 	body := songGetDataBody{id}
 	err := c.apiDoJSON(songGetData, body, &song)
-	return song, err
+	if err != nil {
+		return nil, err
+	}
+	return &song, nil
 }
 
 // Album fetches an Album.
@@ -186,7 +189,10 @@ func (c *Client) Album(id string) (*Album, error) {
 	var album Album
 	body := albumGetDataBody{id}
 	err := c.apiDoJSON(albumGetData, body, &album)
-	return &album, err
+	if err != nil {
+		return nil, err
+	}
+	return &album, nil
 }
 
 // Artist fetches an Artist.
@@ -194,7 +200,10 @@ func (c *Client) Artist(id string) (*Artist, error) {
 	var artist Artist
 	body := artistGetDataBody{id}
 	err := c.apiDoJSON(artistGetData, body, &artist)
-	return &artist, err
+	if err != nil {
+		return nil, err
+	}
+	return &artist, nil
 }
 
 // SongsByAlbum fetches up to songLimit songs on an album.
