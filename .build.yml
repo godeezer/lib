@@ -1,4 +1,6 @@
 image: alpine/edge
+secrets:
+  - cabb4508-2a3e-483b-ad83-6b02a4237704
 packages:
   - go
 sources:
@@ -7,6 +9,13 @@ tasks:
   - test: |
       cd go-deezer
       go test -v ./...
+  - integration-test: |
+      [ -f ~/.arl ] || complete-build
+      set +x
+      . ~/.arl
+      set -x
+      cd go-deezer
+      go test -v ./... -tags integration
   - build: |
       cd go-deezer
       go build -v ./...
