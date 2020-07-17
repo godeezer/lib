@@ -63,10 +63,11 @@ func encryptAes128ECB(pt, key []byte) []byte {
 }
 
 type EncryptedSongReader struct {
-	r   io.Reader
-	bm  cipher.BlockMode
-	i   int
-	buf bytes.Buffer
+	r     io.Reader
+	bm    cipher.BlockMode
+	i     int
+	buf   bytes.Buffer
+	chunk []byte
 }
 
 // NewEncryptedSongReader creates an EncryptedSongReader
@@ -77,7 +78,7 @@ func NewEncryptedSongReader(r io.Reader, songid string) (*EncryptedSongReader, e
 		return nil, err
 	}
 	cbcDecrypter := cipher.NewCBCDecrypter(ci, []byte{0, 1, 2, 3, 4, 5, 6, 7})
-	reader := &EncryptedSongReader{r: r, bm: cbcDecrypter}
+	reader := &EncryptedSongReader{r: r, bm: cbcDecrypter, chunk: make([]byte, 2048)}
 	return reader, nil
 }
 
@@ -99,21 +100,20 @@ func (r *EncryptedSongReader) Read(p []byte) (int, error) {
 // It automatically decrypts chunks when it has to (every third chunk).
 // You most likely would prefer to use Read instead of ReadChunk because it implements io.Reader
 func (r *EncryptedSongReader) ReadChunk() ([]byte, error) {
-	chunk := make([]byte, 2048)
-	n, err := io.ReadFull(r.r, chunk)
+	n, err := io.ReadFull(r.r, r.chunk)
 	if err != nil {
 		if err == io.ErrUnexpectedEOF {
 			err = nil
 		}
-		return chunk[:n], err
+		return r.chunk[:n], err
 	}
 	if r.i%3 == 0 {
 		iv := []byte{0, 1, 2, 3, 4, 5, 6, 7}
 		r.bm.CryptBlocks(iv, iv)
-		r.bm.CryptBlocks(chunk, chunk)
+		r.bm.CryptBlocks(r.chunk, r.chunk)
 	}
 	r.i++
-	return chunk, nil
+	return r.chunk, nil
 }
 
 // getBlowfishKey returns the Blowfish key for a given song by its id.

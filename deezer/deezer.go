@@ -79,8 +79,8 @@ type Artist struct {
 	Fans    int    `json:"NB_FAN"`
 }
 
-// LinkContentType returns the content type and id of a given Deezer link.
-func ParseLink(link string) (ctype ContentType, id string) {
+// ParseURL returns the content type and id of a given Deezer URL.
+func ParseURL(link string) (ctype ContentType, id string) {
 	re := regexp.MustCompile(`deezer.com(?:\/[a-zA-Z]{2})?\/(album|artist|track)\/(\d+)`)
 	m := re.FindAllStringSubmatch(link, -1)
 	if len(m) < 1 || len(m[0]) < 3 {
@@ -97,8 +97,8 @@ func ParseLink(link string) (ctype ContentType, id string) {
 	return ctype, m[0][2]
 }
 
-// Link returns a link from a given content type and content id,
-// being essentially the opposite of ParseLink.
-func Link(ctype ContentType, id string) (link string) {
+// URL returns a URL from a given content type and content id,
+// being essentially the opposite of ParseURL.
+func URL(ctype ContentType, id string) (link string) {
 	return fmt.Sprintf("https://www.deezer.com/%s/%s", ctype, id)
 }
