@@ -3,6 +3,7 @@ package deezer
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
@@ -140,6 +141,9 @@ func (c *Client) apiDoJSON(method apiMethod, body interface{}, v interface{}) er
 	resp, err := c.apiDo(method, r)
 	if err != nil {
 		return err
+	}
+	if resp.StatusCode != 200 {
+		return errors.New("deezer returned non-200 status code")
 	}
 	defer resp.Body.Close()
 	dec := json.NewDecoder(resp.Body)
