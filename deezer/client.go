@@ -16,6 +16,7 @@ type apiMethod string
 
 const (
 	getUserData         apiMethod = "deezer.getUserData"
+	pageSearch                    = "deezer.pageSearch"
 	songGetData                   = "song.getData"
 	songListByAlbum               = "song.getListByAlbum"
 	albumGetData                  = "album.getData"
@@ -63,6 +64,26 @@ type multiSongResponse struct {
 
 type multiAlbumResponse struct {
 	Data []Album `json:"data"`
+}
+
+type pageSearchBody struct {
+	Query  string `json:"query"`
+	Filter string `json:"filter"`
+	Output string `json:"output"`
+	Start  int    `json:"start"`
+	Limit  int    `json:"nb"`
+}
+
+type SearchResponse struct {
+	Artists struct {
+		Data []Artist `json:"data"`
+	} `json:"ARTIST"`
+	Songs struct {
+		Data []Song `json:"data"`
+	} `json:"TRACK"`
+	Albums struct {
+		Data []Album `json:"data"`
+	} `json:"ALBUM"`
 }
 
 type Client struct {
@@ -226,6 +247,14 @@ func (c *Client) AlbumsByArtist(id string) ([]Album, error) {
 	body := albumGetDiscographyBody{id, "us", []int{0}, 500, 300, 0}
 	err := c.apiDoJSON(albumGetDiscography, body, &albums)
 	return albums.Data, err
+}
+
+// Search searches for artists/albums/songs.
+func (c *Client) Search(query, filter, output string, start, limit int) (*SearchResponse, error) {
+	var resp SearchResponse
+	body := pageSearchBody{query, filter, output, start, limit}
+	err := c.apiDoJSON(pageSearch, body, &resp)
+	return &resp, err
 }
 
 // AvailableQualities returns the available qualities for download
