@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/GoDeezer/lib/deezer/crypto/ecb"
+	"github.com/godeezer/lib/deezer/crypto/ecb"
 	"golang.org/x/crypto/blowfish"
 )
 
