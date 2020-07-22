@@ -4,15 +4,15 @@ secrets:
 packages:
   - go
 sources:
-  - https://github.com/erebid/go-deezer
+  - https://github.com/godeezer/lib
 tasks:
   - test: |
-      cd go-deezer
+      cd lib
       go test -v ./...
   - integration-test: |
       [ -f ~/.arl ] || complete-build
       set +x
       . ~/.arl
       set -x
-      cd go-deezer
+      cd lib
       go test -v ./... -tags integration
