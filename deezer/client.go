@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"time"
 )
 
 type ErrUnexpectedStatusCode struct{ Code int }
@@ -121,7 +122,7 @@ func NewClient(arl string) (*Client, error) {
 	client := &Client{
 		&http.Client{
 			Timeout: time.Second * 20,
-			Jar: jar,
+			Jar:     jar,
 		}, arl,
 	}
 	return client, nil
