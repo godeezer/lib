@@ -3,12 +3,18 @@ package deezer
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
 )
+
+type ErrUnexpectedStatusCode struct{ Code int }
+
+func (err ErrUnexpectedStatusCode) Error() string {
+	return fmt.Sprintf("Deezer returned non-2XX code %d", err.Code)
+}
 
 const apiURL = "https://www.deezer.com/ajax/gw-light.php"
 
@@ -150,6 +156,9 @@ func (c *Client) apiDo(method apiMethod, body io.Reader) (resp *http.Response, e
 	req.URL.RawQuery = qs.Encode()
 	req.AddCookie(&http.Cookie{Name: "arl", Value: c.Arl})
 	r, e := c.Do(req)
+	if r.StatusCode < 200 || r.StatusCode > 299 {
+		return nil, ErrUnexpectedStatusCode{r.StatusCode}
+	}
 	return r, e
 }
 
@@ -162,9 +171,6 @@ func (c *Client) apiDoJSON(method apiMethod, body interface{}, v interface{}) er
 	resp, err := c.apiDo(method, r)
 	if err != nil {
 		return err
-	}
-	if resp.StatusCode != 200 {
-		return errors.New("deezer returned non-200 status code")
 	}
 	defer resp.Body.Close()
 	dec := json.NewDecoder(resp.Body)
@@ -284,8 +290,35 @@ func (c *Client) IsQualityAvailable(song Song, quality Quality) bool {
 	if err != nil {
 		return false
 	}
-	if resp.StatusCode != 200 {
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return false
 	}
 	return true
+}
+
+type songDownloadReader struct {
+	r    *DecryptSongReader
+	body io.ReadCloser
+}
+
+func (s songDownloadReader) Read(p []byte) (int, error) {
+	return s.r.Read(p)
+}
+
+func (s songDownloadReader) Close() error {
+	return s.body.Close()
+}
+
+// Download returns an io.ReadCloser
+func (c *Client) Download(song Song, quality Quality) (io.ReadCloser, error) {
+	url := song.DownloadURL(quality)
+	resp, err := c.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return nil, ErrUnexpectedStatusCode{resp.StatusCode}
+	}
+	r, err := NewDecryptSongReader(resp.Body, song.ID)
+	return songDownloadReader{r, resp.Body}, err
 }

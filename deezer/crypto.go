@@ -20,7 +20,7 @@ const filenameKey = "jo6aey6haid2Teih"
 
 // DownloadURL returns a download URL which can be used to stream the song.
 // The audio returned from the URL will be encrypted so you should use
-// a EncryptedSongReader to read it.
+// a DecryptSongReader to read it.
 func (s Song) DownloadURL(quality Quality) string {
 	key := songFilename(s, quality)
 	if len(s.MD5Origin) < 32 {
@@ -62,7 +62,7 @@ func encryptAes128ECB(pt, key []byte) []byte {
 	return ct
 }
 
-type EncryptedSongReader struct {
+type DecryptSongReader struct {
 	r     io.Reader
 	bm    cipher.BlockMode
 	i     int
@@ -70,21 +70,21 @@ type EncryptedSongReader struct {
 	chunk []byte
 }
 
-// NewEncryptedSongReader creates an EncryptedSongReader
+// NewDecryptSongReader creates an DecryptSongReader
 // that reads from r and decrypts it using s.
-func NewEncryptedSongReader(r io.Reader, songid string) (*EncryptedSongReader, error) {
+func NewDecryptSongReader(r io.Reader, songid string) (*DecryptSongReader, error) {
 	ci, err := blowfish.NewCipher(getBlowfishKey(songid))
 	if err != nil {
 		return nil, err
 	}
 	cbcDecrypter := cipher.NewCBCDecrypter(ci, []byte{0, 1, 2, 3, 4, 5, 6, 7})
-	reader := &EncryptedSongReader{r: r, bm: cbcDecrypter, chunk: make([]byte, 2048)}
+	reader := &DecryptSongReader{r: r, bm: cbcDecrypter, chunk: make([]byte, 2048)}
 	return reader, nil
 }
 
 // Read reads up to n(p) bytes into p, returning how many bytes
 // were read and any error.
-func (r *EncryptedSongReader) Read(p []byte) (int, error) {
+func (r *DecryptSongReader) Read(p []byte) (int, error) {
 	for r.buf.Len() < len(p) {
 		chunk, err := r.ReadChunk()
 		r.buf.Write(chunk)
@@ -98,8 +98,8 @@ func (r *EncryptedSongReader) Read(p []byte) (int, error) {
 
 // ReadChunk returns the next n<=2048 bytes of the song.
 // It automatically decrypts chunks when it has to (every third chunk).
-// You most likely would prefer to use Read instead of ReadChunk because it implements io.Reader
-func (r *EncryptedSongReader) ReadChunk() ([]byte, error) {
+// You most likely would prefer to use Read instead of ReadChunk because it implements io.Reader.
+func (r *DecryptSongReader) ReadChunk() ([]byte, error) {
 	n, err := io.ReadFull(r.r, r.chunk)
 	if err != nil {
 		if err == io.ErrUnexpectedEOF {

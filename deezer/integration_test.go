@@ -22,18 +22,15 @@ func mustClient(t *testing.T) *Client {
 	return client
 }
 
-func TestDownloadAndDecrypt(t *testing.T) {
+func TestDownload(t *testing.T) {
 	client := mustClient(t)
 	song, err := client.Song("793554582")
 	if err != nil {
 		t.Fatal("Error getting song:", err)
 	}
-	url := song.DownloadURL(MP3128)
-	sng, err := client.Get(url)
-	defer sng.Body.Close()
-	reader, err := NewEncryptedSongReader(sng.Body, song.ID)
+	reader, err := client.Download(*song, MP3128)
 	if err != nil {
-		t.Fatal("Error creating encrypted song reader:", err)
+		t.Fatal("Error creating decrypting reader for song:", err)
 	}
 	hash := sha256.New()
 	if _, err := io.Copy(hash, reader); err != nil {
