@@ -120,6 +120,7 @@ func NewClient(arl string) (*Client, error) {
 	)
 	client := &Client{
 		&http.Client{
+			Timeout: time.Second * 20,
 			Jar: jar,
 		}, arl,
 	}
