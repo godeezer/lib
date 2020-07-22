@@ -28,7 +28,7 @@ func TestDownloadAndDecrypt(t *testing.T) {
 	if err != nil {
 		t.Fatal("Error getting song:", err)
 	}
-	url := SongDownloadURL(*song, MP3128)
+	url := song.DownloadURL(MP3128)
 	sng, err := client.Get(url)
 	defer sng.Body.Close()
 	reader, err := NewEncryptedSongReader(sng.Body, song.ID)

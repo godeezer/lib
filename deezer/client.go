@@ -276,7 +276,7 @@ func (c *Client) AvailableQualities(song Song) []Quality {
 // IsQualityAvailable returns whether or not a song is available
 // to download for a song.
 func (c *Client) IsQualityAvailable(song Song, quality Quality) bool {
-	url := SongDownloadURL(song, quality)
+	url := song.DownloadURL(quality)
 	if url == "" {
 		return false
 	}

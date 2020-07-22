@@ -11,17 +11,17 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/godeezer/lib/deezer/crypto/ecb"
+	"github.com/GoDeezer/lib/deezer/crypto/ecb"
 	"golang.org/x/crypto/blowfish"
 )
 
 const blowfishSecret = "g4el58wc0zvf9na1"
 const filenameKey = "jo6aey6haid2Teih"
 
-// SongDownloadURL returns a download URL which can be used to stream the song.
+// DownloadURL returns a download URL which can be used to stream the song.
 // The audio returned from the URL will be encrypted so you should use
 // a EncryptedSongReader to read it.
-func SongDownloadURL(s Song, quality Quality) string {
+func (s Song) DownloadURL(quality Quality) string {
 	key := songFilename(s, quality)
 	if len(s.MD5Origin) < 32 {
 		return ""

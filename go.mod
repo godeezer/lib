@@ -1,4 +1,4 @@
-module github.com/godeezer/lib
+module github.com/GoDeezer/lib
 
 go 1.14
 
