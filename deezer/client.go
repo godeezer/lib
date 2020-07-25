@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -179,9 +180,14 @@ func (c *Client) apiDoJSON(method apiMethod, body interface{}, v interface{}) er
 	var jresp response
 	err = dec.Decode(&jresp)
 	if err != nil {
+	}
+	err = json.Unmarshal(jresp.Results, &v)
+	if err != nil &&
+		// See issue #4
+		!strings.Contains(err.Error(), "SNG_CONTRIBUTORS") {
 		return err
 	}
-	return json.Unmarshal(jresp.Results, &v)
+	return nil
 }
 
 func (c *Client) Get(url string) (resp *http.Response, err error) {

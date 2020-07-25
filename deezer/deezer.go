@@ -26,41 +26,45 @@ type ExplicitContent struct {
 	CoverStatus  int `json:"EXPLICIT_COVER_STATUS"`
 }
 
+type Contributors struct {
+	MainArtist []string `json:"main_artist"`
+	Artist     []string `json:"artist"`
+}
+
 type Song struct {
-	ID             string   `json:"SNG_ID"`
-	ProductTrackID string   `json:"PRODUCT_TRACK_ID"`
-	UploadID       int      `json:"UPLOAD_ID"`
-	Title          string   `json:"SNG_TITLE"`
-	ArtistID       string   `json:"ART_ID"`
-	ProviderID     string   `json:"PROVIDER_ID"`
-	ArtistName     string   `json:"ART_NAME"`
-	Artists        []Artist `json:"ARTISTS"`
-	Contributors   struct {
-		MainArtist []string `json:"main_artist"`
-		Artist     []string `json:"artist"`
-	} `json:"SNG_CONTRIBUTORS"`
-	AlbumID           string          `json:"ALB_ID"`
-	AlbumTitle        string          `json:"ALB_TITLE"`
-	MD5Origin         string          `json:"MD5_ORIGIN"`
-	Video             bool            `json:"VIDEO"`
-	Duration          string          `json:"DURATION"`
-	AlbumPicture      string          `json:"ALB_PICTURE"`
-	ArtistPicture     string          `json:"ART_PICTURE"`
-	Rank              string          `json:"RANK_SNG"`
-	FilesizeMP3128    int             `json:"FILESIZE_MP3_128,string"`
-	FilesizeMP3320    int             `json:"FILESIZE_MP3_320,string"`
-	FilesizeFLAC      int             `json:"FILESIZE_FLAC,string"`
-	Filesize          string          `json:"FILESIZE"`
-	MediaVersion      string          `json:"MEDIA_VERSION"`
-	DiskNumber        string          `json:"DISK_NUMBER"`
-	TrackNumber       int             `json:"TRACK_NUMBER,string"`
-	Version           string          `json:"VERSION"`
-	ExplicitLyrics    string          `json:"EXPLICIT_LYRICS"`
-	ExplicitContent   ExplicitContent `json:"EXPLICIT_TRACK_CONTENT"`
-	ISRC              string          `json:"ISRC"`
-	HierarchicalTitle string          `json:"HIERARCHICAL_TITLE"`
-	LyricsID          int             `json:"LYRICS_ID"`
-	Status            int             `json:"STATUS"`
+	ID                  string          `json:"SNG_ID"`
+	ProductTrackID      string          `json:"PRODUCT_TRACK_ID"`
+	UploadID            int             `json:"UPLOAD_ID"`
+	Title               string          `json:"SNG_TITLE"`
+	ArtistID            string          `json:"ART_ID"`
+	ProviderID          string          `json:"PROVIDER_ID"`
+	ArtistName          string          `json:"ART_NAME"`
+	Artists             []Artist        `json:"ARTISTS"`
+	Contributors        Contributors    `json:"SNG_CONTRIBUTORS"`
+	AlbumID             string          `json:"ALB_ID"`
+	AlbumTitle          string          `json:"ALB_TITLE"`
+	MD5Origin           string          `json:"MD5_ORIGIN"`
+	Video               bool            `json:"VIDEO"`
+	Duration            string          `json:"DURATION"`
+	AlbumPicture        string          `json:"ALB_PICTURE"`
+	ArtistPicture       string          `json:"ART_PICTURE"`
+	Rank                string          `json:"RANK_SNG"`
+	FilesizeMP3128      int             `json:"FILESIZE_MP3_128,string"`
+	FilesizeMP3320      int             `json:"FILESIZE_MP3_320,string"`
+	FilesizeFLAC        int             `json:"FILESIZE_FLAC,string"`
+	Filesize            string          `json:"FILESIZE"`
+	MediaVersion        string          `json:"MEDIA_VERSION"`
+	DiskNumber          string          `json:"DISK_NUMBER"`
+	TrackNumber         int             `json:"TRACK_NUMBER,string"`
+	Version             string          `json:"VERSION"`
+	ExplicitLyrics      string          `json:"EXPLICIT_LYRICS"`
+	ExplicitContent     ExplicitContent `json:"EXPLICIT_TRACK_CONTENT"`
+	ISRC                string          `json:"ISRC"`
+	HierarchicalTitle   string          `json:"HIERARCHICAL_TITLE"`
+	LyricsID            int             `json:"LYRICS_ID"`
+	Status              int             `json:"STATUS"`
+	DigitalReleaseDate  string          `json:"DIGITAL_RELEASE_DATE"`
+	PhysicalReleaseDate string          `json:"PHYSICAL_RELEASE_DATE"`
 }
 
 type Album struct {
