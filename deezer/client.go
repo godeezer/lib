@@ -305,7 +305,7 @@ func (c *Client) IsQualityAvailable(song Song, quality Quality) bool {
 }
 
 type songDownloadReader struct {
-	r    *DecryptSongReader
+	r    *DecryptingReader
 	body io.ReadCloser
 }
 
@@ -327,6 +327,6 @@ func (c *Client) Download(song Song, quality Quality) (io.ReadCloser, error) {
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return nil, ErrUnexpectedStatusCode{resp.StatusCode}
 	}
-	r, err := NewDecryptSongReader(resp.Body, song.ID)
+	r, err := NewDecryptingReader(resp.Body, song.ID)
 	return songDownloadReader{r, resp.Body}, err
 }
