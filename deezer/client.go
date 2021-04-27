@@ -114,7 +114,7 @@ func NewClient(arl string) (*Client, error) {
 	}
 	jar.SetCookies(url,
 		[]*http.Cookie{
-			&http.Cookie{
+			{
 				Name:  "arl",
 				Value: arl,
 			},
@@ -183,8 +183,10 @@ func (c *Client) apiDoJSON(method apiMethod, body interface{}, v interface{}) er
 	}
 	err = json.Unmarshal(jresp.Results, &v)
 	if err != nil &&
-		// See issue #4
-		!strings.Contains(err.Error(), "SNG_CONTRIBUTORS") {
+		// Hacky, but required to be able to unmarshal
+		// the awful JSON that PHP produces
+		!strings.Contains(err.Error(),
+			"json: cannot unmarshal array into Go struct field") {
 		return err
 	}
 	return nil
