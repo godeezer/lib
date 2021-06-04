@@ -24,12 +24,12 @@ type apiMethod string
 
 const (
 	getUserData         apiMethod = "deezer.getUserData"
-	pageSearch                    = "deezer.pageSearch"
-	songGetData                   = "song.getData"
-	songListByAlbum               = "song.getListByAlbum"
-	albumGetData                  = "album.getData"
-	artistGetData                 = "artist.getData"
-	albumGetDiscography           = "album.getDiscography"
+	pageSearch          apiMethod = "deezer.pageSearch"
+	songGetData         apiMethod = "song.getData"
+	songListByAlbum     apiMethod = "song.getListByAlbum"
+	albumGetData        apiMethod = "album.getData"
+	artistGetData       apiMethod = "artist.getData"
+	albumGetDiscography apiMethod = "album.getDiscography"
 )
 
 type songGetDataBody struct {
