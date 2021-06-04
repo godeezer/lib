@@ -129,7 +129,7 @@ func NewClient(arl string) (*Client, error) {
 	return client, nil
 }
 
-func (c *Client) Do(req *http.Request) (*http.Response, error) {
+func (c *Client) do(req *http.Request) (*http.Response, error) {
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36")
 	req.Header.Add("Cache-Control", "max-age=0")
 	req.Header.Add("Accept-Language", "en-US,en;q=0.9,en-US;q=0.8,en;q=0.7")
@@ -158,7 +158,7 @@ func (c *Client) apiDo(method apiMethod, body io.Reader) (resp *http.Response, e
 	qs.Add("method", string(method))
 	req.URL.RawQuery = qs.Encode()
 	req.AddCookie(&http.Cookie{Name: "arl", Value: c.Arl})
-	r, e := c.Do(req)
+	r, e := c.do(req)
 	if r.StatusCode < 200 || r.StatusCode > 299 {
 		return nil, ErrUnexpectedStatusCode{r.StatusCode}
 	}
@@ -193,20 +193,12 @@ func (c *Client) apiDoJSON(method apiMethod, body interface{}, v interface{}) er
 	return nil
 }
 
-func (c *Client) Get(url string) (resp *http.Response, err error) {
+func (c *Client) get(url string) (resp *http.Response, err error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
-	return c.Do(req)
-}
-
-func (c *Client) Post(url, contentType string, body io.Reader) (resp *http.Response, err error) {
-	req, err := http.NewRequest("POST", url, nil)
-	if err != nil {
-		return nil, err
-	}
-	return c.Do(req)
+	return c.do(req)
 }
 
 func (c *Client) csrfToken() (string, error) {
@@ -297,7 +289,7 @@ func (c *Client) IsQualityAvailable(song Song, quality Quality) bool {
 	if url == "" {
 		return false
 	}
-	resp, err := c.Get(url)
+	resp, err := c.get(url)
 	if err != nil {
 		return false
 	}
@@ -323,7 +315,7 @@ func (s songDownloadReader) Close() error {
 // Download returns an io.ReadCloser
 func (c *Client) Download(song Song, quality Quality) (io.ReadCloser, error) {
 	url := song.DownloadURL(quality)
-	resp, err := c.Get(url)
+	resp, err := c.get(url)
 	if err != nil {
 		return nil, err
 	}
