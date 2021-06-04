@@ -180,6 +180,7 @@ func (c *Client) apiDoJSON(method apiMethod, body interface{}, v interface{}) er
 	var jresp response
 	err = dec.Decode(&jresp)
 	if err != nil {
+		return err
 	}
 	err = json.Unmarshal(jresp.Results, &v)
 	if err != nil &&
