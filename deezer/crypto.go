@@ -65,9 +65,9 @@ func encryptAes128ECB(pt, key []byte) []byte {
 type DecryptingReader struct {
 	r     io.Reader
 	cd    ChunkDecrypter
-	i     int
-	buf   bytes.Buffer
 	chunk []byte
+	buf   bytes.Buffer
+	i     int
 }
 
 // NewDecryptingReader creates an DecryptingReader
