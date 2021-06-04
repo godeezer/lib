@@ -9,16 +9,16 @@ type Quality int
 
 const (
 	MP3128 Quality = 1
-	MP3320         = 3
-	FLAC           = 9
+	MP3320 Quality = 3
+	FLAC   Quality = 9
 )
 
 type ContentType string
 
 const (
 	ContentAlbum  ContentType = "album"
-	ContentArtist             = "artist"
-	ContentSong               = "track"
+	ContentArtist ContentType = "artist"
+	ContentSong   ContentType = "track"
 )
 
 type ExplicitContent struct {
