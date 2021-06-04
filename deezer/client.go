@@ -103,28 +103,29 @@ type Client struct {
 // this arl can be gotten by following these instructions:
 // https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Login+via+userToken
 func NewClient(arl string) (*Client, error) {
+	return NewClientWithHTTPClient(arl, new(http.Client)), nil
+}
+
+// NewClientWithHTTPClient returns a Deezer client with the given arl.
+// This is useful for setting a timeout for requests made by the Client.
+// It will modify the given http.Client's Jar.
+func NewClientWithHTTPClient(arl string, client *http.Client) *Client {
 	jar, err := cookiejar.New(nil)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 	url, err := url.Parse(apiURL)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
-	jar.SetCookies(url,
-		[]*http.Cookie{
-			{
-				Name:  "arl",
-				Value: arl,
-			},
+	jar.SetCookies(url, []*http.Cookie{
+		{
+			Name:  "arl",
+			Value: arl,
 		},
-	)
-	client := &Client{
-		&http.Client{
-			Jar: jar,
-		}, arl,
-	}
-	return client, nil
+	})
+	client.Jar = jar
+	return &Client{client, arl}
 }
 
 func (c *Client) do(req *http.Request) (*http.Response, error) {
