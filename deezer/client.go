@@ -102,8 +102,8 @@ type Client struct {
 // the given arl (used for authentication)
 // this arl can be gotten by following these instructions:
 // https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Login+via+userToken
-func NewClient(arl string) (*Client, error) {
-	return NewClientWithHTTPClient(arl, new(http.Client)), nil
+func NewClient(arl string) *Client {
+	return NewClientWithHTTPClient(arl, new(http.Client))
 }
 
 // NewClientWithHTTPClient returns a Deezer client with the given arl.
