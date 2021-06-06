@@ -94,6 +94,21 @@ type Artist struct {
 	Fans    int    `json:"NB_FAN"`
 }
 
+type Lyrics struct {
+	Text       string        `json:"LYRICS_TEXT"`
+	ID         string        `json:"LYRICS_ID"`
+	Copyrights string        `json:"LYRICS_COPYRIGHTS"`
+	Writers    string        `json:"LYRICS_WRITERS"`
+	Sync       []SyncedLyric `json:"LYRICS_SYNC_JSON"`
+}
+
+type SyncedLyric struct {
+	Timestamp    string `json:"lrc_timestamp,omitempty"`
+	Duration     string `json:"duration,omitempty"`
+	Line         string `json:"line"`
+	Milliseconds int    `json:"milliseconds,omitempty"`
+}
+
 // ParseURL returns the content type and id of a given Deezer URL.
 func ParseURL(link string) (ctype ContentType, id string) {
 	re := regexp.MustCompile(`deezer.com(?:\/[a-zA-Z]{2})?\/(album|artist|track)\/(\d+)`)

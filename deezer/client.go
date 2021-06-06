@@ -25,23 +25,12 @@ const (
 	getUserData         apiMethod = "deezer.getUserData"
 	pageSearch          apiMethod = "deezer.pageSearch"
 	songGetData         apiMethod = "song.getData"
+	songGetLyrics       apiMethod = "song.getLyrics"
 	songListByAlbum     apiMethod = "song.getListByAlbum"
 	albumGetData        apiMethod = "album.getData"
 	artistGetData       apiMethod = "artist.getData"
 	albumGetDiscography apiMethod = "album.getDiscography"
 )
-
-type songGetDataBody struct {
-	ID string `json:"sng_id"`
-}
-
-type albumGetDataBody struct {
-	ID string `json:"alb_id"`
-}
-
-type artistGetDataBody struct {
-	ID string `json:"art_id"`
-}
 
 type songListByAlbumBody struct {
 	ID    string `json:"alb_id"`
@@ -181,6 +170,7 @@ func (c *Client) apiDoJSON(method apiMethod, body interface{}, v interface{}) er
 	if err != nil {
 		return err
 	}
+	fmt.Println(string(jresp.Results))
 	err = json.Unmarshal(jresp.Results, &v)
 	if err != nil &&
 		// Hacky, but required to be able to unmarshal
@@ -209,8 +199,24 @@ func (c *Client) csrfToken() (string, error) {
 // Song fetches a Song.
 func (c *Client) Song(id string) (*Song, error) {
 	var song Song
-	body := songGetDataBody{id}
+	body := struct {
+		ID string `json:"sng_id"`
+	}{id}
 	err := c.apiDoJSON(songGetData, body, &song)
+	if err != nil {
+		return nil, err
+	}
+	return &song, nil
+}
+
+// Lyrics fetches a song's lyrics. The ID provided can be from
+// a Song's LyricsID field.
+func (c *Client) Lyrics(id string) (*Lyrics, error) {
+	var song Lyrics
+	body := struct {
+		ID string `json:"sng_id"`
+	}{id}
+	err := c.apiDoJSON(songGetLyrics, body, &song)
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +226,9 @@ func (c *Client) Song(id string) (*Song, error) {
 // Album fetches an Album.
 func (c *Client) Album(id string) (*Album, error) {
 	var album Album
-	body := albumGetDataBody{id}
+	body := struct {
+		ID string `json:"alb_id"`
+	}{id}
 	err := c.apiDoJSON(albumGetData, body, &album)
 	if err != nil {
 		return nil, err
@@ -231,7 +239,9 @@ func (c *Client) Album(id string) (*Album, error) {
 // Artist fetches an Artist.
 func (c *Client) Artist(id string) (*Artist, error) {
 	var artist Artist
-	body := artistGetDataBody{id}
+	body := struct {
+		ID string `json:"art_id"`
+	}{id}
 	err := c.apiDoJSON(artistGetData, body, &artist)
 	if err != nil {
 		return nil, err
