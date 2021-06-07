@@ -321,7 +321,27 @@ func (s songDownloadReader) Close() error {
 	return s.body.Close()
 }
 
-// Download returns an io.ReadCloser
+// Write writes a song from Deezer at a given quality to w.
+func (s Song) Write(w io.Writer, quality Quality) error {
+	url := s.DownloadURL(quality)
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return ErrUnexpectedStatusCode{resp.StatusCode}
+	}
+	r, err := NewDecryptingReader(resp.Body, s.ID)
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(w, r)
+	return err
+}
+
+// Download returns an io.ReadCloser from which the song can be read at the
+// given quality. This function is deprecated and it is preferred to use song.Write
 func (c *Client) Download(song Song, quality Quality) (io.ReadCloser, error) {
 	url := song.DownloadURL(quality)
 	resp, err := c.get(url)
