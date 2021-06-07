@@ -170,7 +170,6 @@ func (c *Client) apiDoJSON(method apiMethod, body interface{}, v interface{}) er
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(jresp.Results))
 	err = json.Unmarshal(jresp.Results, &v)
 	if err != nil &&
 		// Hacky, but required to be able to unmarshal
