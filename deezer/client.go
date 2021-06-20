@@ -301,6 +301,7 @@ func (c *Client) IsQualityAvailable(song Song, quality Quality) bool {
 	if err != nil {
 		return false
 	}
+	resp.Body.Close()
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return false
 	}
